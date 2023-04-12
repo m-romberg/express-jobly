@@ -97,7 +97,7 @@ describe("GET /companies", function () {
   });
 
   test("gets companies with filter", async function () {
-    const resp = await request(app).get("/companies?nameLike=C&minEmployees=2");
+    const resp = await request(app).get("/companies?nameLike=c&minEmployees=2");
     expect(resp.body).toEqual({
       companies:
           [
@@ -117,6 +117,43 @@ describe("GET /companies", function () {
             },
           ],
     });
+  })
+
+  test("gets companies with minEmp and maxEmp", async function () {
+    const resp = await request(app)
+                            .get("/companies?minEmployees=1&maxEmployees=2");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            }
+          ],
+    });
+  })
+  test("fails minEmp > maxEmp", async function () {
+    const resp = await request(app)
+                            .get("/companies?minEmployees=2&maxEmployees=1");
+
+    expect(resp.statusCode).toEqual(400);
+  })
+
+  test("fails inappropriate filter criteria", async function () {
+    const resp = await request(app)
+                            .get("/companies?logo=2&maxEmployees=1");
+
+    expect(resp.statusCode).toEqual(400);
   })
 
   test("fails: test next() handler", async function () {
