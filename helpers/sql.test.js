@@ -1,5 +1,5 @@
 const { BadRequestError } = require("../expressError");
-const {sqlForPartialUpdate} = require("./sql");
+const {sqlForPartialUpdate, sqlForFiltering} = require("./sql");
 
 describe("sqlForPartialUpdate", function () {
   test("working", function () {
@@ -48,9 +48,7 @@ describe("sqlForFiltering", function () {
 
     expect(sanitizedSqlObj).toEqual(
       {
-        filterCols: `WHERE "name" ILIKE $1
-                  AND num_employees > $2
-                  AND num_employees < $3`,
+        filterCols: `"name" ILIKE $1 AND "num_employees" > $2 AND "num_employees" < $3`,
         values: ["%rick%", 225, 300]
       }
     );

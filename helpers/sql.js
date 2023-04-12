@@ -41,17 +41,28 @@ function sqlForFiltering(dataFilters, jsToSql) {
   const keys = Object.keys(dataFilters);
   //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
 
-  if (keys.length === 0) throw new BadRequestError("No data");
+  if (keys.length === 0) throw new BadRequestError("No Filters");
 
   // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
-  const cols = keys.map((colName, idx) =>
-      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
-  );
+  const queriesArr = [];
+  for (let i=0; i < keys.length; i++){
+    if (keys[i] === "minEmployees"){
+      queriesArr.push(`"${jsToSql[keys[i]]}" > $${i+1}`);
+    }
+    if (keys[i] === "maxEmployees"){
+      queriesArr.push(`"${jsToSql[keys[i]]}" < $${i+1}`);
+    }
+    if (keys[i] === "nameLike"){
+      queriesArr.push(`"${jsToSql[keys[i]]}" ILIKE $${i+1}`);
+      dataFilters.nameLike = `%${dataFilters.nameLike}%`;
+    }
+  }
+
 
   return {
-    setCols: cols.join(", "),
+    filterCols: queriesArr.join(" AND "),
     values: Object.values(dataFilters),
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+module.exports = { sqlForPartialUpdate, sqlForFiltering };
