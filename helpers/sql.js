@@ -37,6 +37,26 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
+/**
+ * sqlForFilter:
+ *
+ * Turns POJO object containing values to filter by in DB
+ *
+ * Returns an object containing a key with a sanitized database query
+ * and a key of values to filter by in database
+ *
+ * ACCEPTS:
+ * {maxEmployees: 32}
+ *
+ * RETURNS:
+ * {
+    filterCols: '"num_employees" < $1',
+    values: [32]
+  }
+ * @param {obj} dataToUpdate
+ * @param {obj} jsToSql
+ */
+
 function sqlForFiltering(dataFilters, jsToSql) {
   const keys = Object.keys(dataFilters);
   //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
