@@ -54,7 +54,26 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
+  static async findAll(data) {
+    //calling jstosql
+    const { filterCols, values } = sqlForFiltering(
+      data, {
+        nameLike: "name",
+        minEmployees: "num_employees",
+        maxEmployees: "num_employees"
+      }
+    )
+
+    //QUERY FOR NAMELIKE
+// SELECT name, num_employees
+// FROM companies
+// WHERE name ILIKE '%rick%';
+
+    //QUERY FOR NUM EMPLOYEES
+// SELECT name, num_employees
+// FROM companies
+// WHERE num_employees > 225 AND num_employees < 300;
+
     const companiesRes = await db.query(
         `SELECT handle,
                 name,
