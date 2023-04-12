@@ -19,7 +19,7 @@ describe("sqlForPartialUpdate", function () {
     );
   });
 
-  test("failed - no data passed", function () {
+  test("fails no data passed", function () {
     const dataToUpdate = {};
 
     const jsToSql = {
