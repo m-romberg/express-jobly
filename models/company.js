@@ -66,6 +66,15 @@ class Company {
     return companiesRes.rows;
   }
 
+  /**
+   * Finds all companies and filters by requirements
+   *
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   */
+  static async findAllBy() {
+
+  }
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }

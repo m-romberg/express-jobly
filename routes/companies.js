@@ -51,7 +51,11 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+  //pull and see if any filters in query string
+
+  //if no valid filters:
   const companies = await Company.findAll();
+
   return res.json({ companies });
 });
 
