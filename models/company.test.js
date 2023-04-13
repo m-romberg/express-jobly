@@ -90,6 +90,7 @@ describe("_filterQueryString", function () {
       }
     );
   });
+  //TODO: test the jsToSql mapper, only one filter (make sure others do not get passed)
 
 })
 

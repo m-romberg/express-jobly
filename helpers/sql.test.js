@@ -1,5 +1,5 @@
 const { BadRequestError } = require("../expressError");
-const {sqlForPartialUpdate, sqlForFiltering} = require("./sql");
+const {sqlForPartialUpdate} = require("./sql");
 
 describe("sqlForPartialUpdate", function () {
   test("working", function () {
@@ -27,7 +27,7 @@ describe("sqlForPartialUpdate", function () {
       lastName: "last_name",
       isAdmin: "is_admin",
     }
-
+    //TODO: save yourself with the error!!!!
     try {
       sqlForPartialUpdate(dataToUpdate, jsToSql);
     } catch(err) {
