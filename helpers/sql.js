@@ -63,7 +63,7 @@ function sqlForFiltering(dataFilters, jsToSql) {
   console.log("keys", keys);
   //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
 
-  if (keys.length === 0) throw new BadRequestError("No Filters");
+  // if (keys.length === 0) throw new BadRequestError("No Filters");
 
   // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const queriesArr = [];
@@ -75,11 +75,17 @@ function sqlForFiltering(dataFilters, jsToSql) {
       queriesArr.push(`"${jsToSql[keys[i]]}" < $${i+1}`);
     }
     if (keys[i] === "nameLike"){
-      queriesArr.push(`"${jsToSql[keys[i]]}" ILIKE $${i+1}`);
+      queriesArr.push(`${jsToSql[keys[i]]} ILIKE $${i+1}`);
       dataFilters.nameLike = `%${dataFilters.nameLike}%`;
     }
   }
 
+  if(queriesArr.length === 0) {
+   return  {
+    filterCols: '',
+    values: Object.values(dataFilters),
+    }
+}
 
   return {
     filterCols: `WHERE ` + queriesArr.join(" AND "),

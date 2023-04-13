@@ -54,51 +54,29 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll(data) {
-    const allQueriesBeginWith = `SELECT handle,
-                                        name AS,
-                                        description,
-                                        num_employees AS "numEmployees",
-                                        logo_url AS "logoUrl"
-                                  FROM companies`;
-    const allQueriesEndWith = `ORDER BY name`;
+  static async findAll(data = {}) {
+    console.log("data inside findall", data);
+    const { filterCols, values } = sqlForFiltering(
+      data, {
+        nameLike: "name",
+        minEmployees: "num_employees",
+        maxEmployees: "num_employees",
+      });
 
-    let querySql;
-    let companiesRes;
-    if (data) {
-      const { filterCols, values } = sqlForFiltering(
-        data, {
-          nameLike: "name",
-          minEmployees: "num_employees",
-          maxEmployees: "num_employees",
-        });
+    console.log("filtercols, values inside findall", filterCols, values);
 
-        querySql =  allQueriesBeginWith + filterCols + " " + allQueriesEndWith;
-        companiesRes = await db.query(querySql, values);
-      } else {
-        querySql = allQueriesBeginWith + " " + allQueriesEndWith
-        companiesRes = await db.query(querySql);
-      }
+    const querySql = `SELECT handle,
+                              name,
+                              description,
+                              num_employees AS "numEmployees",
+                              logo_url AS "logoUrl"
+                          FROM companies
+                          ${filterCols}
+                          ORDER BY name`;
+    const companiesRes = await db.query(querySql, values);
 
-    console.log("querySql", querySql);
-    console.log("values", values);
+    console.log("query inside findall", querySql);
 
-    // TESTTTTTTTTTTTTTT
-    // const { filterCols, values } = sqlForFiltering(
-    //   data, {
-    //     nameLike: "name",
-    //     minEmployees: "num_employees",
-    //     maxEmployees: "num_employees",
-    //   });
-    // const querySql = `SELECT handle,
-    //                                     name AS,
-    //                                     description,
-    //                                     num_employees AS "numEmployees",
-    //                                     logo_url AS "logoUrl"
-    //                                 FROM companies
-    //                                 ${filterCols}
-    //                                 ORDER BY name`;
-    // companiesRes = await db.query(querySql);
 
     return companiesRes.rows;
   }
