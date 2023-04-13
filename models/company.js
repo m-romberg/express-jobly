@@ -83,6 +83,23 @@ class Company {
     console.log("querySql", querySql);
     console.log("values", values);
 
+    // TESTTTTTTTTTTTTTT
+    // const { filterCols, values } = sqlForFiltering(
+    //   data, {
+    //     nameLike: "name",
+    //     minEmployees: "num_employees",
+    //     maxEmployees: "num_employees",
+    //   });
+    // const querySql = `SELECT handle,
+    //                                     name AS,
+    //                                     description,
+    //                                     num_employees AS "numEmployees",
+    //                                     logo_url AS "logoUrl"
+    //                                 FROM companies
+    //                                 ${filterCols}
+    //                                 ORDER BY name`;
+    // companiesRes = await db.query(querySql);
+
     return companiesRes.rows;
   }
 

@@ -58,7 +58,9 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  */
 
 function sqlForFiltering(dataFilters, jsToSql) {
+  console.log("dataFilters", dataFilters);
   const keys = Object.keys(dataFilters);
+  console.log("keys", keys);
   //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
 
   if (keys.length === 0) throw new BadRequestError("No Filters");
