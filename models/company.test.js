@@ -56,6 +56,43 @@ describe("create", function () {
   });
 });
 
+/************************************** _filterQueryString */
+describe("_filterQueryString", function () {
+  test("working", function () {
+    const dataFilters = {nameLike: 'rick', minEmployees: 225, maxEmployees: 300};
+    const jsToSql = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees"
+    }
+    const sanitizedSqlObj = Company._filterQueryString(dataFilters, jsToSql);
+
+    expect(sanitizedSqlObj).toEqual(
+      {
+        filterCols: `WHERE name ILIKE $1 AND num_employees > $2 AND num_employees < $3`,
+        values: ["%rick%", 225, 300]
+      }
+    );
+  });
+  test("working with no filter", function () {
+    const dataFilters = {};
+    const jsToSql = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees"
+    }
+    const sanitizedSqlObj = Company._filterQueryString(dataFilters, jsToSql);
+
+    expect(sanitizedSqlObj).toEqual(
+      {
+        filterCols: ``,
+        values: []
+      }
+    );
+  });
+
+})
+
 /************************************** findAll */
 
 describe("findAll", function () {

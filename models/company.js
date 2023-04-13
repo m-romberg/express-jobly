@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, sqlForFiltering } = require("../helpers/sql");
+const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -47,6 +47,62 @@ class Company {
     const company = result.rows[0];
 
     return company;
+  }
+
+  /**
+ * _filterQueryString:
+ *
+ * Turns POJO object containing values to filter by in DB
+ *
+ * Returns an object containing a key with a sanitized database WHERE query
+ * and a key of values to filter by in database
+ *
+ * ACCEPTS:
+ * {maxEmployees: 32}
+ *
+ * RETURNS:
+ * {
+    filterCols: 'WHERE "num_employees" < $1',
+    values: [32]
+  }
+ * @param {obj} dataToUpdate
+ * @param {obj} jsToSql
+ */
+
+  static _filterQueryString (dataFilters, jsToSql) {
+    console.log("dataFilters", dataFilters);
+    const keys = Object.keys(dataFilters);
+    console.log("keys", keys);
+    //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
+
+    // if (keys.length === 0) throw new BadRequestError("No Filters");
+
+    // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
+    const queriesArr = [];
+    for (let i=0; i < keys.length; i++){
+      if (keys[i] === "minEmployees"){
+        queriesArr.push(`${jsToSql[keys[i]]} > $${i+1}`);
+      }
+      if (keys[i] === "maxEmployees"){
+        queriesArr.push(`${jsToSql[keys[i]]} < $${i+1}`);
+      }
+      if (keys[i] === "nameLike"){
+        queriesArr.push(`${jsToSql[keys[i]]} ILIKE $${i+1}`);
+        dataFilters.nameLike = `%${dataFilters.nameLike}%`;
+      }
+    }
+
+    if(queriesArr.length === 0) {
+     return  {
+      filterCols: '',
+      values: Object.values(dataFilters),
+      }
+  }
+
+    return {
+      filterCols: `WHERE ` + queriesArr.join(" AND "),
+      values: Object.values(dataFilters),
+    };
   }
 
   /** Find all companies.
