@@ -75,9 +75,6 @@ class Company {
     console.log("keys", keys);
     //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
 
-    // if (keys.length === 0) throw new BadRequestError("No Filters");
-
-    // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
     const queriesArr = [];
     for (let i=0; i < keys.length; i++){
       if (keys[i] === "minEmployees"){
@@ -107,6 +104,8 @@ class Company {
   }
 
   /** Find all companies.
+   * Takes optional object containing cols and values to filter search
+   * {minEmployees: 3, maxEmployees: 5, nameLike: rick}
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */

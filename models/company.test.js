@@ -175,7 +175,8 @@ describe("findAll", function () {
   test("fails: minEmployees > maxEmployees", async function () {
     const filter = {minEmployees: 7, maxEmployees: 2};
     try{
-      let companies = await Company.findAll(filter);
+      await Company.findAll(filter);
+      throw new Error("fail test, you shouldn't get here");
     } catch(err){
       expect(err).toBeInstanceOf(BadRequestError);
     }
