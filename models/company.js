@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForFiltering } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -55,33 +55,34 @@ class Company {
    * */
 
   static async findAll(data) {
-    //calling jstosql
-    const { filterCols, values } = sqlForFiltering(
-      data, {
-        nameLike: "name",
-        minEmployees: "num_employees",
-        maxEmployees: "num_employees"
+    const allQueriesBeginWith = `SELECT handle,
+                                        name AS,
+                                        description,
+                                        num_employees AS "numEmployees",
+                                        logo_url AS "logoUrl"
+                                  FROM companies`;
+    const allQueriesEndWith = `ORDER BY name`;
+
+    let querySql;
+    let companiesRes;
+    if (data) {
+      const { filterCols, values } = sqlForFiltering(
+        data, {
+          nameLike: "name",
+          minEmployees: "num_employees",
+          maxEmployees: "num_employees",
+        });
+
+        querySql =  allQueriesBeginWith + filterCols + " " + allQueriesEndWith;
+        companiesRes = await db.query(querySql, values);
+      } else {
+        querySql = allQueriesBeginWith + " " + allQueriesEndWith
+        companiesRes = await db.query(querySql);
       }
-    )
 
-    //QUERY FOR NAMELIKE
-// SELECT name, num_employees
-// FROM companies
-// WHERE name ILIKE '%rick%';
+    console.log("querySql", querySql);
+    console.log("values", values);
 
-    //QUERY FOR NUM EMPLOYEES
-// SELECT name, num_employees
-// FROM companies
-// WHERE num_employees > 225 AND num_employees < 300;
-
-    const companiesRes = await db.query(
-        `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
     return companiesRes.rows;
   }
 
