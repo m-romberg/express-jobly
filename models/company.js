@@ -112,6 +112,13 @@ class Company {
    * */
 
   static async findAll(data = {}) {
+
+    if(data.minEmployees > data.maxEmployees){
+      throw new BadRequestError(
+        "minEmployees cannot be greater than maxEmployees"
+        );
+    }
+
     console.log("data inside findall", data);
     const { filterCols, values } = Company._filterQueryString(
       data, {

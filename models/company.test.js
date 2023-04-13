@@ -145,7 +145,7 @@ describe("findAll", function () {
   });
 
   test("works: filter nameLike", async function () {
-    const filter = {nameLike: 'C1'};
+    const filter = {nameLike: 'c'};
     let companies = await Company.findAll(filter);
     expect(companies).toEqual([
       {
@@ -170,6 +170,15 @@ describe("findAll", function () {
         logoUrl: "http://c3.img",
       }
     ]);
+  });
+
+  test("fails: minEmployees > maxEmployees", async function () {
+    const filter = {minEmployees: 7, maxEmployees: 2};
+    try{
+      let companies = await Company.findAll(filter);
+    } catch(err){
+      expect(err).toBeInstanceOf(BadRequestError);
+    }
   });
 
 });
