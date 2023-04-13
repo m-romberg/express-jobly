@@ -97,6 +97,7 @@ describe("GET /companies", function () {
   });
 
   test("gets companies with filter", async function () {
+    //TODO: send request to endpoint and add .query to remove hardcode
     const resp = await request(app).get("/companies?nameLike=c&minEmployees=2");
     expect(resp.body).toEqual({
       companies:
@@ -142,18 +143,22 @@ describe("GET /companies", function () {
           ],
     });
   })
+  //TODO: more robust test: test resp message
   test("fails minEmp > maxEmp", async function () {
     const resp = await request(app)
                             .get("/companies?minEmployees=2&maxEmployees=1");
 
     expect(resp.statusCode).toEqual(400);
+    expect(resp.error.message).toEqual("minEmployees cannot be greater than maxEmployees");
   })
 
+  //TODO: more robust test: test resp message
   test("fails inappropriate filter criteria", async function () {
     const resp = await request(app)
                             .get("/companies?logo=2&maxEmployees=1");
 
     expect(resp.statusCode).toEqual(400);
+    expect(resp.error.message).toEqual("instance is not allowed to have the additional property \"logo\"");
   })
 
   test("fails: test next() handler", async function () {
