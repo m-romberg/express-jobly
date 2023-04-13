@@ -96,8 +96,10 @@ describe("GET /companies", function () {
   });
 
   test("gets companies with filter", async function () {
-    //TODO: send request to endpoint and add .query to remove hardcode
-    const resp = await request(app).get("/companies?nameLike=c&minEmployees=2");
+    const resp = await request(app).get("/companies").query({
+      nameLike: 'c',
+      minEmployees: 2,
+    });
     expect(resp.body).toEqual({
       companies: [
         {
@@ -119,9 +121,10 @@ describe("GET /companies", function () {
   });
 
   test("gets companies with minEmp and maxEmp", async function () {
-    const resp = await request(app).get(
-      "/companies?minEmployees=1&maxEmployees=2"
-    );
+    const resp = await request(app).get("/companies").query({
+      minEmployees: 1,
+      maxEmployees: 2,
+    });
     expect(resp.body).toEqual({
       companies: [
         {
@@ -155,7 +158,10 @@ describe("GET /companies", function () {
   });
 
   test("fails inappropriate filter criteria", async function () {
-    const resp = await request(app).get("/companies?logo=2&maxEmployees=1");
+    const resp = await request(app).get("/companies").query({
+      logo: 2,
+      maxEmployees: 1,
+    });
 
     expect(resp.statusCode).toEqual(400);
     expect(resp.text).toEqual(
