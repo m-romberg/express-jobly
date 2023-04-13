@@ -81,13 +81,14 @@ class Company {
     const queriesArr = [];
     for (let i=0; i < keys.length; i++){
       if (keys[i] === "minEmployees"){
-        queriesArr.push(`${jsToSql[keys[i]]} > $${i+1}`);
+        queriesArr.push(`${jsToSql[keys[i]]} >= $${i+1}`);
       }
       if (keys[i] === "maxEmployees"){
-        queriesArr.push(`${jsToSql[keys[i]]} < $${i+1}`);
+        queriesArr.push(`${jsToSql[keys[i]]} <= $${i+1}`);
       }
       if (keys[i] === "nameLike"){
         queriesArr.push(`${jsToSql[keys[i]]} ILIKE $${i+1}`);
+        console.log("dataFilters.nameLike", dataFilters.nameLike)
         dataFilters.nameLike = `%${dataFilters.nameLike}%`;
       }
     }
@@ -112,14 +113,14 @@ class Company {
 
   static async findAll(data = {}) {
     console.log("data inside findall", data);
-    const { filterCols, values } = sqlForFiltering(
+    const { filterCols, values } = Company._filterQueryString(
       data, {
         nameLike: "name",
         minEmployees: "num_employees",
         maxEmployees: "num_employees",
       });
 
-    console.log("filtercols, values inside findall", filterCols, values);
+    console.log("filtercols",filterCols, "values inside findall",  values);
 
     const querySql = `SELECT handle,
                               name,

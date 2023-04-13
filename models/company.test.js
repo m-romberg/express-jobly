@@ -69,7 +69,7 @@ describe("_filterQueryString", function () {
 
     expect(sanitizedSqlObj).toEqual(
       {
-        filterCols: `WHERE name ILIKE $1 AND num_employees > $2 AND num_employees < $3`,
+        filterCols: `WHERE name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3`,
         values: ["%rick%", 225, 300]
       }
     );
