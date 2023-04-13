@@ -59,3 +59,17 @@ describe("ensureLoggedIn", function () {
     expect(() => ensureLoggedIn(req, res, next)).toThrowError();
   });
 });
+
+describe("ensureIsAdmin", function () {
+  test("works", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: true } } };
+    ensureIsAdmin(req, res, next);
+  });
+
+  test("unauth if is_admin = false", function () {
+    const req = {};
+    const res = { locals: {} };
+    expect(() => ensureIsAdmin(req, res, next)).toThrowError();
+  });
+});
