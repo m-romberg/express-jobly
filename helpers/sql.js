@@ -42,7 +42,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  *
  * Turns POJO object containing values to filter by in DB
  *
- * Returns an object containing a key with a sanitized database query
+ * Returns an object containing a key with a sanitized database WHERE query
  * and a key of values to filter by in database
  *
  * ACCEPTS:
@@ -50,7 +50,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  *
  * RETURNS:
  * {
-    filterCols: '"num_employees" < $1',
+    filterCols: 'WHERE "num_employees" < $1',
     values: [32]
   }
  * @param {obj} dataToUpdate
@@ -80,7 +80,7 @@ function sqlForFiltering(dataFilters, jsToSql) {
 
 
   return {
-    filterCols: queriesArr.join(" AND "),
+    filterCols: `WHERE ` + queriesArr.join(" AND "),
     values: Object.values(dataFilters),
   };
 }
