@@ -18,16 +18,16 @@ class Company {
 
   static async create({ handle, name, description, numEmployees, logoUrl }) {
     const duplicateCheck = await db.query(
-        `SELECT handle
+      `SELECT handle
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(
-        `INSERT INTO companies(
+      `INSERT INTO companies(
           handle,
           name,
           description,
@@ -36,13 +36,13 @@ class Company {
            VALUES
              ($1, $2, $3, $4, $5)
            RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`,
-        [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      [
+        handle,
+        name,
+        description,
+        numEmployees,
+        logoUrl,
+      ],
     );
     const company = result.rows[0];
 
@@ -69,36 +69,38 @@ class Company {
  * @param {obj} jsToSql
  */
 
-  static _filterQueryString (dataFilters, jsToSql) {
+  static _filterQueryString(dataFilters, jsToSql) {
     console.log("dataFilters", dataFilters);
     const keys = Object.keys(dataFilters);
     console.log("keys", keys);
     //ex: keys = ["nameLike", "minEmployees", "maxEmployees"]
 
-    const queriesArr = [];
-    for (let i=0; i < keys.length; i++){
-      if (keys[i] === "minEmployees"){
-        queriesArr.push(`${jsToSql[keys[i]]} >= $${i+1}`);
+
+    //Does not have to be in for loop... we do know how many we will be getting
+    const whereClauseComponents = [];
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === "minEmployees") {
+        whereClauseComponents.push(`${jsToSql[keys[i]]} >= $${i + 1}`);
       }
-      if (keys[i] === "maxEmployees"){
-        queriesArr.push(`${jsToSql[keys[i]]} <= $${i+1}`);
+      if (keys[i] === "maxEmployees") {
+        whereClauseComponents.push(`${jsToSql[keys[i]]} <= $${i + 1}`);
       }
-      if (keys[i] === "nameLike"){
-        queriesArr.push(`${jsToSql[keys[i]]} ILIKE $${i+1}`);
-        console.log("dataFilters.nameLike", dataFilters.nameLike)
+      if (keys[i] === "nameLike") {
+        whereClauseComponents.push(`${jsToSql[keys[i]]} ILIKE $${i + 1}`);
+        console.log("dataFilters.nameLike", dataFilters.nameLike);
         dataFilters.nameLike = `%${dataFilters.nameLike}%`;
       }
     }
 
-    if(queriesArr.length === 0) {
-     return  {
-      filterCols: '',
-      values: Object.values(dataFilters),
-      }
-  }
+    if (whereClauseComponents.length === 0) {
+      return {
+        filterCols: '',
+        values: Object.values(dataFilters),
+      };
+    }
 
     return {
-      filterCols: `WHERE ` + queriesArr.join(" AND "),
+      filterCols: `WHERE ` + whereClauseComponents.join(" AND "),
       values: Object.values(dataFilters),
     };
   }
@@ -112,21 +114,21 @@ class Company {
 
   static async findAll(data = {}) {
 
-    if(data.minEmployees > data.maxEmployees){
+    if (data.minEmployees > data.maxEmployees) {
       throw new BadRequestError(
         "minEmployees cannot be greater than maxEmployees"
-        );
+      );
     }
 
     console.log("data inside findall", data);
     const { filterCols, values } = Company._filterQueryString(
       data, {
-        nameLike: "name",
-        minEmployees: "num_employees",
-        maxEmployees: "num_employees",
-      });
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
+    });
 
-    console.log("filtercols",filterCols, "values inside findall",  values);
+    console.log("filtercols", filterCols, "values inside findall", values);
 
     const querySql = `SELECT handle,
                               name,
@@ -155,14 +157,14 @@ class Company {
 
   static async get(handle) {
     const companyRes = await db.query(
-        `SELECT handle,
+      `SELECT handle,
                 name,
                 description,
                 num_employees AS "numEmployees",
                 logo_url AS "logoUrl"
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     const company = companyRes.rows[0];
 
@@ -185,11 +187,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
@@ -212,11 +214,11 @@ class Company {
 
   static async remove(handle) {
     const result = await db.query(
-        `DELETE
+      `DELETE
            FROM companies
            WHERE handle = $1
            RETURNING handle`,
-        [handle]);
+      [handle]);
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
