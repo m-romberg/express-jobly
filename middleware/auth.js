@@ -46,23 +46,23 @@ function ensureIsAdmin(req, res, next) {
   if (res.locals.user?.isAdmin === true) {
     return next();
   }
-  throw new UnauthorizedError("Halt there bozo");
+  throw new UnauthorizedError("Not authorized to access this.");
 }
 
-/** Middleware to use to ensure user current user.
+/** Middleware to use to ensure user current user or admin.
  *
  * If not, raises Unauthorized.
  */
 
 function ensureThisUserOrAdmin(req, res, next) {
   console.log("res.locals", res.locals, "req.params", req.params);
-  if (
+  if ( res.locals?.user && (
     res.locals.user?.isAdmin === true ||
     res.locals.user?.username === req.params.username
-  ) {
+  )) {
     return next();
   }
-  throw new UnauthorizedError("YOU SHALL NOT PASS");
+  throw new UnauthorizedError("Not authorized to access this.");
 }
 
 module.exports = {
