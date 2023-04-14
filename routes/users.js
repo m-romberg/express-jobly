@@ -24,7 +24,7 @@ const router = express.Router();
  * This returns the newly created user and an authentication token for them:
  *  {user: { username, firstName, lastName, email, isAdmin }, token }
  *
- * Authorization required: login
+ * Authorization required: admin
  **/
 
 router.post("/", ensureIsAdmin, async function (req, res, next) {
@@ -48,7 +48,7 @@ router.post("/", ensureIsAdmin, async function (req, res, next) {
  *
  * Returns list of all users.
  *
- * Authorization required: login
+ * Authorization required: admin
  **/
 
 router.get("/", ensureIsAdmin, async function (req, res, next) {
@@ -61,7 +61,7 @@ router.get("/", ensureIsAdmin, async function (req, res, next) {
  *
  * Returns { username, firstName, lastName, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: this user or admin
  **/
 
 router.get("/:username", ensureThisUserOrAdmin, async function (req, res, next) {
@@ -77,7 +77,7 @@ router.get("/:username", ensureThisUserOrAdmin, async function (req, res, next) 
  *
  * Returns { username, firstName, lastName, email, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: this user or admin
  **/
 
 router.patch("/:username", ensureThisUserOrAdmin, async function (req, res, next) {
@@ -90,15 +90,17 @@ router.patch("/:username", ensureThisUserOrAdmin, async function (req, res, next
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-
+  //TODO: passing req.body is fine the way we have it bc we validate with jsonschema
+  // otherwise this could be potentially dangerous to pass req.body before
+  // verifying ourselves
   const user = await User.update(req.params.username, req.body);
   return res.json({ user });
 });
 
-
+//TODO: update docstring authorization for all routes
 /** DELETE /[username]  =>  { deleted: username }
  *
- * Authorization required: login
+ * Authorization required: this user or admin
  **/
 
 router.delete("/:username", ensureThisUserOrAdmin, async function (req, res, next) {
