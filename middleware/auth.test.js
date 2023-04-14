@@ -62,6 +62,7 @@ describe("ensureLoggedIn", function () {
   });
 });
 
+
 describe("ensureIsAdmin", function () {
   test("works", function () {
     const req = {};
@@ -75,6 +76,7 @@ describe("ensureIsAdmin", function () {
     expect(() => ensureIsAdmin(req, res, next)).toThrowError();
   });
 });
+
 
 describe("ensureThisUserOrAdmin", function () {
   test("works for current user", function () {
