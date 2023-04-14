@@ -58,7 +58,7 @@ describe("ensureLoggedIn", function () {
   test("unauth if no login", function () {
     const req = {};
     const res = { locals: {} };
-    expect(() => ensureLoggedIn(req, res, next)).toThrowError();
+    expect(() => ensureLoggedIn(req, res, next)).toThrow(UnauthorizedError);
   });
 });
 
@@ -70,10 +70,16 @@ describe("ensureIsAdmin", function () {
     ensureIsAdmin(req, res, next);
   });
 
-  test("unauth if is_admin = false", function () {
+  test("unauth if anon", function () {
     const req = {};
     const res = { locals: {} };
-    expect(() => ensureIsAdmin(req, res, next)).toThrowError();
+    expect(() => ensureIsAdmin(req, res, next)).toThrow(UnauthorizedError);
+  });
+
+  test("unauth if logged in and not admin", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: false } } };
+    expect(() => ensureIsAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
 });
 
@@ -94,12 +100,13 @@ describe("ensureThisUserOrAdmin", function () {
   test("unauth if not user", function () {
     const req = { params: {username: "test2"} };
     const res = { locals: { user: { username: "test", isAdmin: false } } };
-    expect(() => ensureThisUserOrAdmin(req, res, next)).toThrowError();
+    expect(() => ensureThisUserOrAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
 
   test("unauth if anon", function () {
+    //TODO: req is not trying to access anything
     const req = {};
     const res = {};
-    expect(() => ensureThisUserOrAdmin(req, res, next)).toThrowError();
+    expect(() => ensureThisUserOrAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
 });
