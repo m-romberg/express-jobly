@@ -263,13 +263,22 @@ describe("PATCH /companies/:handle", function () {
   });
 
   test("unauth for anon", async function () {
+    const resp = await request(app).patch(`/companies/c1`)
+    .send({
+      name: "C1-new",
+    })
+    .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth for generic users", async function () {
     const resp = await request(app).patch(`/companies/c1`).send({
       name: "C1-new",
     });
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found on no such company", async function () {
+  test("404 for admin and no such company", async function () {
     const resp = await request(app)
       .patch(`/companies/nope`)
       .send({
@@ -322,7 +331,7 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found for no such company", async function () {
+  test("404 for admin and no such company", async function () {
     const resp = await request(app)
       .delete(`/companies/nope`)
       .set("authorization", `Bearer ${adminToken}`);
