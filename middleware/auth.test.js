@@ -104,8 +104,7 @@ describe("ensureThisUserOrAdmin", function () {
   });
 
   test("unauth if anon", function () {
-    //TODO: req is not trying to access anything
-    const req = {};
+    const req = { params: {username: "test"} };
     const res = {};
     expect(() => ensureThisUserOrAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
