@@ -11,6 +11,7 @@ const {
 
 
 const { SECRET_KEY } = require("../config");
+const { yellow } = require("colors");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
@@ -76,6 +77,12 @@ describe("ensureIsAdmin", function () {
     expect(() => ensureIsAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
 
+  test("unauth if isAdmin != true or false", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: "yellow" } } };
+    expect(() => ensureIsAdmin(req, res, next)).toThrow(UnauthorizedError);
+  });
+
   test("unauth if logged in and not admin", function () {
     const req = {};
     const res = { locals: { user: { username: "test", isAdmin: false } } };
@@ -101,6 +108,12 @@ describe("ensureThisUserOrAdmin", function () {
     const req = { params: {username: "test2"} };
     const res = { locals: { user: { username: "test", isAdmin: false } } };
     expect(() => ensureThisUserOrAdmin(req, res, next)).toThrow(UnauthorizedError);
+  });
+
+  test("unauth if isAdmin != true or false", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: "yellow" } } };
+    expect(() => ensureIsAdmin(req, res, next)).toThrow(UnauthorizedError);
   });
 
   test("unauth if anon", function () {

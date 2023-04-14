@@ -187,12 +187,9 @@ describe("GET /users", function () {
 });
 
 /************************************** GET /users/:username */
-//TODO: test works for admin, works for this user, test 401 unauth
-// test for 401 logged in user that is not user or admin
-// users that are not logged in or incorrect user should receive
-// unauth/401 error
+
 describe("GET /users/:username", function () {
-  //TODO: update description to reflect works for this user
+
   test("works for this user", async function () {
     const resp = await request(app)
       .get(`/users/u1`)
@@ -220,6 +217,8 @@ describe("GET /users/:username", function () {
       .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
+
+  //TODO: test that works for admin
 
   test("not found if admin and user not found", async function () {
     const resp = await request(app)
@@ -287,6 +286,8 @@ describe("PATCH /users/:username", () => {
     expect(resp.statusCode).toEqual(400);
   });
 
+  //TODO: passing test for admin, test for invalid data for not this user
+
   test("works: set new password", async function () {
     const resp = await request(app)
       .patch(`/users/u1`)
@@ -311,12 +312,15 @@ describe("PATCH /users/:username", () => {
 /************************************** DELETE /users/:username */
 
 describe("DELETE /users/:username", function () {
-  test("works for users", async function () {
+
+  test("works for this user", async function () {
     const resp = await request(app)
       .delete(`/users/u1`)
       .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({ deleted: "u1" });
   });
+
+  //TODO: passing test for admin
 
   test("unauth for anon", async function () {
     const resp = await request(app).delete(`/users/u1`);

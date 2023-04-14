@@ -30,19 +30,15 @@ describe("POST /companies", function () {
     numEmployees: 10,
   };
 
-  test("does not allow general user", async function () {
+  test("unauth for generic users", async function () {
     const resp = await request(app)
       .post("/companies")
       .send(newCompany)
       .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
-    //TODO: make more robust by checking message
-    // expect(resp.body).toEqual({
-    //   company: newCompany,
-    // });
   });
 
-  test("ok for admin", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
       .post("/companies")
       .send(newCompany)
@@ -54,7 +50,7 @@ describe("POST /companies", function () {
     });
   });
 
-  test("bad request with missing data", async function () {
+  test("bad request for admin with missing data", async function () {
     const resp = await request(app)
       .post("/companies")
       .send({
@@ -65,7 +61,7 @@ describe("POST /companies", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request with invalid data", async function () {
+  test("bad request for admin with invalid data", async function () {
     const resp = await request(app)
       .post("/companies")
       .send({
@@ -80,7 +76,7 @@ describe("POST /companies", function () {
 /************************************** GET /companies */
 
 describe("GET /companies", function () {
-  test("ok for anon", async function () {
+  test("works for anon", async function () {
     const resp = await request(app).get("/companies");
     expect(resp.body).toEqual({
       companies: [
@@ -234,17 +230,7 @@ describe("GET /companies/:handle", function () {
 
 describe("PATCH /companies/:handle", function () {
 
-  test("unauth for users", async function () {
-    const resp = await request(app)
-      .patch(`/companies/c1`)
-      .send({
-        name: "C1-new",
-      })
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
-  test("auth for admin", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -267,7 +253,6 @@ describe("PATCH /companies/:handle", function () {
     .send({
       name: "C1-new",
     })
-    .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -288,7 +273,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("bad request on handle change attempt", async function () {
+  test("bad request for admin on handle change attempt", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -298,7 +283,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request on invalid data", async function () {
+  test("bad request for admin on invalid data", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -312,14 +297,14 @@ describe("PATCH /companies/:handle", function () {
 /************************************** DELETE /companies/:handle */
 
 describe("DELETE /companies/:handle", function () {
-  test("unauth for users", async function () {
+  test("unauth for generic users", async function () {
     const resp = await request(app)
       .delete(`/companies/c1`)
       .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("auth for admins", async function () {
+  test("works for admins", async function () {
     const resp = await request(app)
       .delete(`/companies/c1`)
       .set("authorization", `Bearer ${adminToken}`);
@@ -330,6 +315,8 @@ describe("DELETE /companies/:handle", function () {
     const resp = await request(app).delete(`/companies/c1`);
     expect(resp.statusCode).toEqual(401);
   });
+
+  //TODO: add test for logged in and not admin
 
   test("404 for admin and no such company", async function () {
     const resp = await request(app)
